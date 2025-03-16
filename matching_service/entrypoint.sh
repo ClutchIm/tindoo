@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "matching_service: Ожидание PostgreSQL..."
 while ! nc -z matching_db 5432; do sleep 1; done
 echo "matching_service: PostgreSQL запущен."

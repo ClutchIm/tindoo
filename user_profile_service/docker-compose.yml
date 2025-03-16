@@ -1,8 +1,9 @@
 services:
   user_profile_service:
-    build: ./user_profile_service
+    build: .
     container_name: user_profile_service
     env_file:
+      - ../.env
       - .env
     ports:
       - "8007:8000"

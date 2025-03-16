@@ -1,8 +1,9 @@
 services:
   selection_deck_service:
-    build: ./selection_deck_service
+    build: .
     container_name: selection_deck_service
     env_file:
+      - ../.env
       - .env
     ports:
       - "8005:8000"

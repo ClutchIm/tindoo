@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "user_profile_service: Ожидание PostgreSQL..."
 while ! nc -z user_profile_db 5432; do sleep 1; done
 echo "user_profile_service: PostgreSQL запущен."

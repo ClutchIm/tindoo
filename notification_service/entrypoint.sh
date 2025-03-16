@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "notification_service: Ожидание Redis..."
 while ! nc -z notification_redis 6379; do sleep 1; done
 echo "notification_service: Redis запущен."

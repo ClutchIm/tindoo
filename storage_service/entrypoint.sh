@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "storage_service: Ожидание PostgreSQL..."
 while ! nc -z storage_db 5432; do sleep 1; done
 echo "storage_service: PostgreSQL запущен."

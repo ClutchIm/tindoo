@@ -1,8 +1,9 @@
 services:
   storage_service:
-    build: ./storage_service
+    build: .
     container_name: storage_service
     env_file:
+      - ../.env
       - .env
     ports:
       - "8006:8000"

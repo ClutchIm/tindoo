@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "selection_deck_service: Ожидание PostgreSQL..."
 while ! nc -z selection_deck_db 5432; do sleep 1; done
 echo "selection_deck_service: PostgreSQL запущен."

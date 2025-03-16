@@ -1,8 +1,9 @@
 services:
   matching_service:
-    build: ./matching_service
+    build: .
     container_name: matching_service
     env_file:
+      - ../.env
       - .env
     ports:
       - "8003:8000"

@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "auth_service: Ожидание PostgreSQL..."
 while ! nc -z auth_db 5432; do sleep 1; done
 echo "auth_service: PostgreSQL запущен."

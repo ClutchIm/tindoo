@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "chat_service: Ожидание Redis..."
 while ! nc -z chat_redis 6379; do sleep 1; done
 echo "chat_service: Redis запущен."
