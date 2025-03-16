@@ -1,0 +1,24 @@
+services:
+  notification_service:
+    build: ./notification_service
+    container_name: notification_service
+    env_file:
+      - .env
+    ports:
+      - "8004:8000"
+    depends_on:
+      - notification_redis
+    networks:
+      - backend
+
+  notification_redis:
+    image: redis
+    container_name: notification_redis
+    ports:
+      - "6376:6379"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

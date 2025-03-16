@@ -1,0 +1,37 @@
+services:
+  user_profile_service:
+    build: ./user_profile_service
+    container_name: user_profile_service
+    env_file:
+      - .env
+    ports:
+      - "8007:8000"
+    depends_on:
+      - user_profile_db
+      - user_profile_redis
+    networks:
+      - backend
+
+  user_profile_db:
+    image: postgres:15
+    container_name: user_profile_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5437:5432"
+    networks:
+      - backend
+
+  user_profile_redis:
+    image: redis
+    container_name: user_profile_redis
+    ports:
+      - "6375:6379"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

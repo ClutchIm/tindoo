@@ -1,0 +1,35 @@
+services:
+  matching_service:
+    build: ./matching_service
+    container_name: matching_service
+    env_file:
+      - .env
+    ports:
+      - "8003:8000"
+    depends_on:
+      - matching_db
+      - matching_redis
+
+  matching_db:
+    image: postgres:15
+    container_name: matching_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5434:5432"
+    networks:
+      - backend
+
+  matching_redis:
+    image: redis
+    container_name: matching_redis
+    ports:
+      - "6377:6379"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

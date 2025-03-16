@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  auth:
+    build: ./auth_service
+    container_name: auth_service
+    depends_on:
+      - auth_db
+    networks:
+      - backend
+    profiles:
+      - main
+
+  chat:
+    build: ./chat_service
+    container_name: chat_service
+    depends_on:
+      - chat_redis
+    networks:
+      - backend
+    profiles:
+      - main
+
+  matching:
+    build: ./matching_service
+    container_name: matching_service
+    depends_on:
+      - matching_db
+      - matching_redis
+    networks:
+      - backend
+    profiles:
+      - main
+
+  notification:
+    build: ./notification_service
+    container_name: notification_service
+    depends_on:
+      - notification_redis
+    networks:
+      - backend
+    profiles:
+      - main
+
+  selection_deck:
+    build: ./selection_deck_service
+    container_name: selection_deck_service
+    depends_on:
+      - selection_deck_db
+    networks:
+      - backend
+    profiles:
+      - main
+
+  storage:
+    build: ./storage_service
+    container_name: storage_service
+    depends_on:
+      - storage_db
+    networks:
+      - backend
+    profiles:
+      - main
+
+  user_profile:
+    build: ./user_profile_service
+    container_name: user_profile_service
+    depends_on:
+      - user_profile_db
+      - user_profile_redis
+    networks:
+      - backend
+    profiles:
+      - main
+
+networks:
+  backend:
+    external: true

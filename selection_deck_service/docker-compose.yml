@@ -1,0 +1,28 @@
+services:
+  selection_deck_service:
+    build: ./selection_deck_service
+    container_name: selection_deck_service
+    env_file:
+      - .env
+    ports:
+      - "8005:8000"
+    depends_on:
+      - selection_deck_db
+    networks:
+      - backend
+
+  selection_deck_db:
+    image: postgres:15
+    container_name: selection_deck_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5435:5432"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

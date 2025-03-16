@@ -1,0 +1,28 @@
+services:
+  auth_service:
+    build: ./auth_service
+    container_name: auth_service
+    env_file:
+      - .env
+    ports:
+      - "8001:8000"
+    depends_on:
+      - auth_db
+    networks:
+      - backend
+
+  auth_db:
+    image: postgres:15
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

@@ -1,0 +1,28 @@
+services:
+  storage_service:
+    build: ./storage_service
+    container_name: storage_service
+    env_file:
+      - .env
+    ports:
+      - "8006:8000"
+    depends_on:
+      - storage_db
+    networks:
+      - backend
+
+  storage_db:
+    image: postgres:15
+    container_name: storage_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5436:5432"
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
