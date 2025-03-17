@@ -10,6 +10,8 @@ services:
     depends_on:
       - matching_db
       - matching_redis
+    networks:
+      - backend
 
   matching_db:
     image: postgres:15
@@ -20,6 +22,11 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - backend
 
@@ -33,4 +40,4 @@ services:
 
 networks:
   backend:
-    external: true
+    driver: bridge
