@@ -9,6 +9,8 @@ services:
       - "8001:8000"
     depends_on:
       - auth_db
+    volumes:
+      - ./auth_app/migrations:/app/auth_app/migrations
     networks:
       - backend
 
@@ -23,7 +25,12 @@ services:
       - "5433:5432"
     networks:
       - backend
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
 
 networks:
   backend:
     driver: bridge
+
+volumes:
+  auth_db_data:
