@@ -10,6 +10,8 @@ services:
     depends_on:
       - user_profile_db
       - user_profile_redis
+    volumes:
+      - ./profile_app/migrations:/app/profile_app/migrations
     networks:
       - backend
 
@@ -22,6 +24,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5437:5432"
+    volumes:
+      - user_profile_db_data:/var/lib/postgresql/data
     networks:
       - backend
 

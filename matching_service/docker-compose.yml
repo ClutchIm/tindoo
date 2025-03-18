@@ -10,6 +10,8 @@ services:
     depends_on:
       - matching_db
       - matching_redis
+    volumes:
+      - ./match_app/migrations:/app/match_app/migrations
     networks:
       - backend
 
@@ -22,6 +24,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5434:5432"
+    volumes:
+      - matching_db_data:/var/lib/postgresql/data
     networks:
       - backend
 
