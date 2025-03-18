@@ -9,8 +9,8 @@ services:
       - "8005:8000"
     depends_on:
       - selection_deck_db
-    volumes:
-      - ./deck_app/migrations:/app/deck_app/migrations
+#    volumes:
+#      - ./deck_app/migrations:/app/deck_app/migrations
     networks:
       - backend
 
@@ -23,8 +23,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5435:5432"
-    volumes:
-      - selection_deck_db_data:/var/lib/postgresql/data
+#    volumes:
+#      - selection_deck_db_data:/var/lib/postgresql/data
     networks:
       - backend
 

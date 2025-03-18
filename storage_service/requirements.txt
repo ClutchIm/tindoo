@@ -3,3 +3,5 @@ djangorestframework
 gunicorn
 psycopg2-binary
 dotenv
+boto3
+django-storages
