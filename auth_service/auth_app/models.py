@@ -1,6 +1,7 @@
+import random
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import uuid
+from django.utils.timezone import now
 
 
 class User(AbstractUser):
@@ -18,6 +19,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     verified = models.BooleanField(default=False)
     email_otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -27,5 +29,10 @@ class User(AbstractUser):
 
     def generate_otp(self):
         """Генерирует 6-значный код для верификации"""
-        self.email_otp = str(uuid.uuid4().int)[:6]  # Берем первые 6 цифр от UUID
+        self.email_otp = str(random.randint(100000, 999999))
+        self.otp_created_at = now()
         self.save()
+
+    def verify_code(self, entered_code):
+        """Проверяем введенный код"""
+        return self.email_otp == entered_code

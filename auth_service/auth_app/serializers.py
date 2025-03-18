@@ -23,20 +23,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class VerifyEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
 
-    def validate(self, data):
-        """Проверяем, существует ли пользователь с таким email и совпадает ли OTP-код"""
-        try:
-            user = User.objects.get(email=data['email'])
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Пользователь с таким email не найден.")
-
-        if user.email_otp != data['otp']:
+    def validate_otp(self, otp):
+        """Проверяем, совпадает ли код"""
+        user = self.context['request'].user  # Берём текущего пользователя
+        if user.email_otp != otp:
             raise serializers.ValidationError("Неверный код подтверждения.")
-
-        return data
+        return otp
 
 
 class UserSerializer(serializers.ModelSerializer):

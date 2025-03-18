@@ -1,15 +1,17 @@
-from django.shortcuts import render
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from django.core.mail import send_mail
-from django.conf import settings
-from .utils import logger
+from rest_framework.permissions import IsAuthenticated
 
+from .utils import logger, send_verification_email
 from .models import User
 from .serializers import RegisterSerializer, UserSerializer, VerifyEmailSerializer
+
+
+class UserViewSet(ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class RegisterView(APIView):
@@ -20,14 +22,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-
-            # Отправляем email с OTP-кодом
-            send_mail(
-                subject="Подтверждение email",
-                message=f"Ваш код подтверждения: {user.email_otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
+            send_verification_email(user)
 
             return Response(
                 {'message': 'Пользователь создан. Проверьте почту для подтверждения.'},
@@ -37,24 +32,34 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ResendVerificationCodeView(APIView):
+    """Повторная отправка кода"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if user.verified:
+            return Response({"detail": "Email уже подтвержден"}, status=400)
+
+        send_verification_email(user)
+        return Response({"detail": "Код повторно отправлен"}, status=200)
+
+
 class VerifyEmailView(APIView):
-    """Подтверждение email по OTP-коду"""
+    """Подтверждение кода"""
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = VerifyEmailSerializer(data=request.data)
         if serializer.is_valid():
-            user = User.objects.get(email=serializer.validated_data['email'])
+            user = request.user
+            if user.email_otp != serializer.validated_data['otp']:
+                return Response({"detail": "Неверный код"}, status=400)
+
             user.verified = True
-            user.email_otp = None
             user.save()
-            return Response({"message": "Email подтвержден!"}, status=status.HTTP_200_OK)
+            return Response({"detail": "Email подтвержден"}, status=200)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserViewSet(ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
+        return Response(serializer.errors, status=400)
 
 
