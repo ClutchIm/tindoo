@@ -2,12 +2,9 @@ import logging
 from django.core.mail import send_mail
 from django.conf import settings
 
-
 def send_verification_email(user):
-    """Отправляет код подтверждения"""
+    """Send verification code"""
     code = user.email_otp
-
-    # Отправляем email
     send_mail(
         subject="Код подтверждения",
         message=f"Ваш код: {code}",

@@ -6,10 +6,10 @@ from django.utils.timezone import now
 
 class User(AbstractUser):
     """
-    Кастомная модель пользователя.
-    - email используется как уникальный идентификатор (USERNAME_FIELD).
-    - verified показывает, подтверждена ли почта.
-    - email_otp хранит одноразовый код для верификации.
+    Custom user model.
+    - Uses email as a unique identifier (USERNAME_FIELD).
+    - The 'verified' field indicates whether the email is confirmed.
+    - The 'email_otp' field stores a one-time verification code.
     """
 
     class Meta:
@@ -28,11 +28,11 @@ class User(AbstractUser):
         return self.email
 
     def generate_otp(self):
-        """Генерирует 6-значный код для верификации"""
+        """Generates a 6-digit verification code"""
         self.email_otp = str(random.randint(100000, 999999))
         self.otp_created_at = now()
         self.save()
 
     def verify_code(self, entered_code):
-        """Проверяем введенный код"""
+        """Checks if the entered code is correct"""
         return self.email_otp == entered_code
