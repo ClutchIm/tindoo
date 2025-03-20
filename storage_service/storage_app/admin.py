@@ -1,6 +1,4 @@
 from django.contrib import admin
+from .models import UploadedFile
 
-from models import Storage
-
-
-admin.site.register(Storage)
+admin.site.register(UploadedFile)

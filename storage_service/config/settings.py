@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'storages',
+    'storage_app',
 ]
 
 MIDDLEWARE = [
@@ -77,36 +80,49 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database/Storage
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-if os.getenv('STORAGE') == 'cloud':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASS'),
-            'HOST': 'storage_db',
-            'PORT': '5432',
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASS'),
+        'HOST': 'storage_db',
+        'PORT': '5432',
     }
-    # ----Local storage----
-    STATIC_URL = 'files/static/'
-    MEDIA_URL = 'files/media/'
-elif os.getenv('STORAGE') == 'local':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-    # ----Yandex s3----
+}
+
+STORAGE_MODE = os.getenv('STORAGE', 'local').lower()
+
+STORAGES = {
+    "default": {
+        "BACKEND": "config.s3_storage.MediaStorage" if STORAGE_MODE == "cloud" else "django.core.files.storage.FileSystemStorage"
+    },
+    "staticfiles": {
+        "BACKEND": "config.s3_storage.StaticStorage" if STORAGE_MODE == "cloud" else "django.contrib.staticfiles.storage.StaticFilesStorage"
+    },
+}
+
+if STORAGE_MODE == 'cloud':
     DEFAULT_FILE_STORAGE = 'config.s3_storage.MediaStorage'
     STATICFILES_STORAGE = 'config.s3_storage.StaticStorage'
+    AWS_DEFAULT_ACL = 'public-read'
 
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net'
     AWS_S3_ACCESS_KEY_ID = os.getenv('AWS_S3_ACCESS_KEY_ID')
     AWS_S3_SECRET_ACCESS_KEY = os.getenv('AWS_S3_SECRET_ACCESS_KEY')
     AWS_QUERYSTRING_AUTH = False
+    AWS_S3_REGION_NAME = 'ru-central1'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.storage.yandexcloud.net'
+
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+else:
+    STATIC_URL = 'files/static/'
+    MEDIA_URL = 'files/media/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'files/static')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'files/media')
 
 
 # Password validation
@@ -144,3 +160,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} - {name}: {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{levelname}] {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "storage_service": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}

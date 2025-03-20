@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('auth_app.urls')),  # Подключаем маршруты auth_service
+    path('api/', include('auth_app.urls')),  # Подключаем маршруты auth_service
 ]

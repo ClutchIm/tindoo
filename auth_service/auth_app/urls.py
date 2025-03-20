@@ -14,10 +14,10 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
-    path('api/users/', include(router.urls)),
-    path('api/register/', RegisterView.as_view(), name='register'),
-    path('api/verify-email/', VerifyEmailView.as_view(), name='verify-email'),
-    path('api/resend-verification/', ResendVerificationCodeView.as_view(), name='resend-verification'),
-    path('api/login/', LoginView.as_view(), name='login'),
-    path('api/logout/', LogoutView.as_view(), name='logout'),
+    path('users/', include(router.urls)),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('resend-verification/', ResendVerificationCodeView.as_view(), name='resend-verification'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

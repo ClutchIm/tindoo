@@ -24,8 +24,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5434:5432"
-#    volumes:
-#      - matching_db_data:/var/lib/postgresql/data
+    volumes:
+      - matching_db_data:/var/lib/postgresql/data
     networks:
       - backend
 
@@ -40,3 +40,6 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  matching_db_data:
